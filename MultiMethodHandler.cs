@@ -131,18 +131,15 @@ public class MultiMethodHandler : OrderedMonoBehaviourEventHandler<IEvent>
         value = null;
         var eventType = @event.GetType();
 
-        // Если параметр - сам тип события или IEvent
         if (parameterType == eventType || parameterType == typeof(IEvent))
         {
             value = @event;
             return true;
         }
 
-        // Ищем публичные поля и свойства в событии
         var fields = eventType.GetFields(BindingFlags.Public | BindingFlags.Instance);
         var properties = eventType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        // Проверяем поля
         foreach (var field in fields)
         {
             if (field.FieldType == parameterType)
@@ -152,7 +149,6 @@ public class MultiMethodHandler : OrderedMonoBehaviourEventHandler<IEvent>
             }
         }
 
-        // Проверяем свойства
         foreach (var property in properties)
         {
             if (property.PropertyType == parameterType && property.CanRead)
@@ -165,7 +161,6 @@ public class MultiMethodHandler : OrderedMonoBehaviourEventHandler<IEvent>
         return false;
     }
 
-    // Реализация обязательного абстрактного метода
     public override void Handle(IEvent @event)
     {
         foreach (var subscription in subscriptions)
@@ -184,20 +179,13 @@ public class MultiMethodHandler : OrderedMonoBehaviourEventHandler<IEvent>
         {
             foreach (var kvp in eventHandlers)
             {
-                try
-                {
-                    var unsubscribeMethod = typeof(IEventPublisher).GetMethod("Unsubscribe")?
-                        .MakeGenericMethod(kvp.Key);
+                var unsubscribeMethod = typeof(IEventPublisher).GetMethod("Unsubscribe")?
+                    .MakeGenericMethod(kvp.Key);
 
-                    unsubscribeMethod?.Invoke(eventPublisher, new[] { kvp.Value });
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Error unsubscribing from {kvp.Key.Name}: {e.Message}");
-                }
+                unsubscribeMethod?.Invoke(eventPublisher, new[] { kvp.Value });
             }
         }
-
         base.OnDestroy();
     }
 }
+
