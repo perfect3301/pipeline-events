@@ -28,7 +28,6 @@ public class ServiceLocator : MonoBehaviour
         RegisterService<IEventPublisher>(eventAggregator);
 
         _isInitialized = true;
-        Debug.Log("ServiceLocator initialized with EventPublisher");
     }
 
     public void RegisterService<T>(T service)
@@ -56,7 +55,6 @@ public class ServiceLocator : MonoBehaviour
         throw new System.Exception($"Service {typeof(T)} not registered");
     }
 
-    // Безопасный метод получения сервиса
     public bool TryGetService<T>(out T service)
     {
         service = default;
@@ -72,4 +70,5 @@ public class ServiceLocator : MonoBehaviour
 
         return false;
     }
+
 }
