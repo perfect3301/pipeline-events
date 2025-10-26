@@ -75,8 +75,6 @@ public interface IEventHandler<TEvent> where TEvent : IEvent
     void Handle(TEvent @event);
 }
 
-
-// Файл: Core/Events/EventAggregator.cs
 public class EventAggregator : IEventPublisher
 {
     private readonly Dictionary<System.Type, List<object>> _handlers = new();
@@ -87,10 +85,7 @@ public class EventAggregator : IEventPublisher
         if (!_handlers.ContainsKey(eventType))
             _handlers[eventType] = new List<object>();
 
-        // Удаляем если уже есть (чтобы избежать дублирования)
         _handlers[eventType].Remove(handler);
-
-        // Добавляем и сортируем по порядку
         _handlers[eventType].Add(handler);
         SortHandlers<TEvent>();
     }
@@ -175,4 +170,5 @@ public abstract class OrderedMonoBehaviourEventHandler<TEvent> : MonoBehaviour, 
     }
 
     public abstract void Handle(TEvent @event);
+
 }
